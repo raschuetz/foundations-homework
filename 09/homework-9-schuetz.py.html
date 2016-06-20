@@ -1,0 +1,325 @@
+
+# coding: utf-8
+
+# # Homework 9
+
+# We're going to make a Lil' QuakeBot!!!! Please write this code as a .py file, not a Notebook.
+
+# ## First, tips:
+# READ THROUGH THE ENTIRE ASSIGNMENT BEFORE YOU BEGIN
+# * Be careful that you're doing all of your math with ints or floats instead of strings that look like ints or floats.
+# * When you write your functions, you can pass either the entire dictionary to the function OR just the part you're curious about (e.g., when you're getting the day you could send the whole earthquake dictionary or just what's in the 'time' key.)
+# * Writing empty functions that always return the same thing are a great way to start off. You can start saying every earthquake is shallow and then fill in the actual code later.
+# * Find out what each column name in the database means by visiting http://earthquake.usgs.gov/earthquakes/feed/v1.0/csv.php and clicking the links for each column.
+# ## PART ZERO: Overall description
+# Given an earthquake defined like this...
+# 
+#      earthquake = {
+#        'rms': '1.85',
+#        'updated': '2014-06-11T05:22:21.596Z',
+#        'type': 'earthquake',
+#        'magType': 'mwp',
+#        'longitude': '-136.6561',
+#        'gap': '48',
+#        'depth': '10',
+#        'dmin': '0.811',
+#        'mag': '5.7',
+#        'time': '2014-06-04T11:58:58.200Z',
+#        'latitude': '59.0001',
+#        'place': '73km WSW of Haines, Alaska',
+#        'net': 'us',
+#        'nst': '',
+#        'id': 'usc000rauc'}
+#  
+# I want to be able to run
+#  
+#      print(eq_to_sentence(earthquake))
+#  
+# and get the following:
+#  
+#  A DEPTH POWER, MAGNITUDE earthquake was reported DAY TIME_OF_DAY on DATE LOCATION.
+#  
+# So, for example, "A deep, huge 4.5 magnitude earthquake was reported Monday morning on June 22 73km WSW of Haines, Alaska".
+# 
+#  DEPTH, POWER, MAGNITUDE, DAY, and TIME_OF_DAY should all come from separate functions. 
+# More details are in PART ONE and PART TWO.
+#  
+# ## PART ONE: Write your few tiny functions
+#  
+# First you'll need to write a few functions to help describe an earthquake. 
+# Try out each of these functions individually. You will probably require:
+# * depth_to_words will describe the earthquake's depth
+# * magnitude_to_words will describe the earthquake's power
+# * day_in_words should be the day of the week
+# * time_in_words should be "morning", "afternoon", "evening" or "night"
+# * date_in_words should be "Monthname day", e.g. "June 22"
+# * Any other functions as necessary
+# 
+# <p>DEPTH can be determined from the USGS website - 
+# http://earthquake.usgs.gov/learn/topics/seismology/determining_depth.php - 
+# it should be either 'shallow', 'intermediate' or 'deep'
+#  
+# <p>POWER should be evocative words like like 'easily ignored' or 'huge' or 'very destructive' (feel free to pick your own) - look on Google Image Search for "richter scale" to see some possible descriptors.
+#  
+# <p>MAGNITUDE should be the actual numerical magnitude.
+# 
+# <p>DAY should be the day of the week.
+# 
+# <p>TIME_OF_DAY should be morning, afternoon, evening or night.
+# 
+# <p>DATE should be "Monthname day", e.g. "June 22".
+# 
+# <p>TIP: You probably (a.k.a. definitely) need to convert 'time' - which is a string - into a Python datetime object which can do .hour, .day, .strftime("%Y %b %d") and other fun things. Convert it and test the conversion like this:
+#  
+#     import dateutil.parser
+#     timestring = '2014-06-04T11:58:58.200Z'
+#     yourdate = dateutil.parser.parse(timestring)
+#     print("The hour is", yourdate.hour)
+#     print("We can do things with strftime like", print(yourdate.strftime("%Y %b")))
+# 
+# You'll need to pip install dateutils.
+
+# In[8]:
+
+earthquake = {
+ 'rms': '1.85',
+ 'updated': '2014-06-11T05:22:21.596Z',
+ 'type': 'earthquake',
+ 'magType': 'mwp',
+ 'longitude': '-136.6561',
+ 'gap': '48',
+ 'depth': '10',
+ 'dmin': '0.811',
+ 'mag': '5.7',
+ 'time': '2014-06-04T11:58:58.200Z',
+ 'latitude': '59.0001',
+ 'place': '73km WSW of Haines, Alaska',
+ 'net': 'us',
+ 'nst': '',
+ 'id': 'usc000rauc'}
+
+
+# In[1]:
+
+import pandas as pd
+
+
+# In[2]:
+
+df = pd.read_csv('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.csv')
+
+
+# In[3]:
+
+df.head()
+
+
+# In[5]:
+
+depth_sample = df.head()['depth']
+type(depth_sample)
+
+
+# In[87]:
+
+def depth(dictionary):
+    kilometers = float(dictionary['depth'])
+    if kilometers <= 70:
+        return 'A shallow'
+    elif kilometers <= 300:
+        return 'An intermediate'
+    elif kilometers <= 700:
+        return 'A deep'
+    else:
+        return 'A deep-focus'
+
+
+# In[16]:
+
+depth(earthquake)
+
+
+# In[9]:
+
+# # 1st try. Didn't put in a dictionary
+# def depth(kilometers):
+#     if kilometers <= 70:
+#         return 'shallow'
+#     elif kilometers <= 300:
+#         return 'intermediate'
+#     elif kilometers <= 700:
+#         return 'deep'
+#     else:
+#         return 'deep-focus'
+
+
+# In[11]:
+
+# # 1st try. Didn't put in a dictionary
+# depth(float(earthquake['depth']))
+
+
+# In[17]:
+
+def magnitude_to_words(dictionary):
+    magnitude = float(dictionary['mag'])
+    if magnitude <= 2:
+        return 'unnoticeable'
+    elif magnitude <= 3: 
+        return 'hardly noticeable'
+    elif magnitude <= 4:
+        return 'small'
+    elif magnitude <= 6:
+        return 'locally damaging'
+    elif magnitude <= 8:
+        return 'destructive'
+    else:
+        return 'catastrophic'
+
+
+# In[18]:
+
+magnitude_to_words(earthquake)
+
+
+# In[36]:
+
+import dateutil.parser
+timestring = '2014-06-04T11:58:58.200Z'
+yourdate = dateutil.parser.parse(timestring)
+print("The hour is", yourdate.hour)
+print("We can do things with strftime like")
+print(yourdate.strftime("%Y %b"))
+
+
+# In[42]:
+
+def day_in_words(dictionary):
+    timestring = dictionary['time']
+    yourdate = dateutil.parser.parse(timestring)
+    return yourdate.strftime('%A')
+
+
+# In[43]:
+
+day_in_words(earthquake)
+
+
+# In[50]:
+
+def time_in_words(dictionary):
+    timestring = dictionary['time']
+    yourdate = dateutil.parser.parse(timestring)
+    hour = int(yourdate.strftime('%H'))
+    if hour < 12:
+        return 'morning'
+    elif hour < 5:
+        return 'afternoon'
+    elif hour < 9:
+        return 'evening'
+    else:
+        return 'night'
+
+
+# In[51]:
+
+time_in_words(earthquake)
+
+
+# In[54]:
+
+def date_in_words(dictionary):
+    timestring = dictionary['time']
+    yourdate = dateutil.parser.parse(timestring)
+    return yourdate.strftime('%B %-d')
+
+
+# In[55]:
+
+date_in_words(earthquake)
+
+
+# ## PART TWO: Write the eq_to_sentence function
+#  
+# Write a function called eq_to_sentence that, when called, returns the whole sentence mentioned above, "A DEPTH DESCRIPTION, MAGNITUDE earthquake was reported DAY TIME_OF_DAY on DATE LOCATION."
+
+# In[111]:
+
+def eq_to_sentence(dictionary):
+    return depth(dictionary) + ', ' + magnitude_to_words(dictionary) + ' ' + str(dictionary['mag']) + '-magnitude earthquake was reported ' + day_in_words(dictionary) + ' ' + time_in_words(dictionary) + ' on ' + date_in_words(dictionary) + '.'
+
+
+# Print out the result for the sample earthquake.
+
+# In[112]:
+
+eq_to_sentence(earthquake)
+
+
+# # PART THREE: Doing it in bulk
+# 
+# Read in the csv of the past 30 days of 1.0+ earthquke activity from http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.csv (tip: read_csv works with URLs!)
+# 
+# <p>Because we haven't covered looping through pandas, use the following code to convert a pandas DataFrame into a list of dictionaries that you can loop through.
+
+# In[59]:
+
+earthquakes_df = pd.read_csv("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.csv")
+earthquakes = earthquakes_df.to_dict('records')
+
+
+# In[68]:
+
+earthquakes[1]
+# eq_to_sentence(earthquakes)
+
+
+# (If you really want to do it with pandas, it's for index, row in earthquakes_df.iterrows():)
+# 
+# <p>Loop through each earthquake, printing sentence descriptions for the ones that are above or equal to 4.0 on the Richter scale.
+
+# In[88]:
+
+for earthquake in earthquakes:
+    if earthquake['mag'] > 4:
+        print(eq_to_sentence(earthquake))
+
+
+# ## PART FOUR: The other bits
+# 
+# If the earthquake is anything other than an earthquake (e.g. explosion or quarry blast), print
+# 
+#     There was also a magnitude MAGNITUDE TYPE_OF_EVENT on DATE LOCATION.
+# 
+# For example,
+# 
+#     There was also a magnitude 1.29 quarry blast on June 19 12km SE of Tehachapi, California.
+# 
+# with TYPE_OF_EVENT being explosion, quarry blast, etc and LOCATION being 'place' - e.g. '0km N of The Geysers, California'.
+
+# In[90]:
+
+# none of the non-earthquakes were above a 4 on the richter scale, so I don't need to modify Part Three
+df[(df['type'] != 'earthquake') & (df['mag'] > 4)]
+
+
+# In[93]:
+
+def type_of_event(dictionary):
+    return dictionary['type']
+        
+
+
+# In[167]:
+
+def non_eq_to_sentence(dictionary):
+    if type_of_event(dictionary) != 'earthquake':
+        return type_of_event(dictionary)
+
+
+# In[173]:
+
+for earthquake in earthquakes:
+    if non_eq_to_sentence(earthquake) != None:
+        print('There was also a magnitude', earthquake['mag'], non_eq_to_sentence(earthquake), 'on', date_in_words(earthquake), earthquake['place'] + '.')
+
